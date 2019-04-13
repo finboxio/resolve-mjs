@@ -1,5 +1,5 @@
 {
-  "name": "require-mjs",
+  "name": "resolve-mjs",
   "version": "1.0.0",
   "description": "Import .mjs modules using legacy `require` resolution algorithm",
   "main": "index.mjs",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/finboxio/require-mjs.git"
+    "url": "git+https://github.com/finboxio/resolve-mjs.git"
   },
   "keywords": [
     "import",
@@ -22,9 +22,9 @@
   "author": "finboxio",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/finboxio/require-mjs/issues"
+    "url": "https://github.com/finboxio/resolve-mjs/issues"
   },
-  "homepage": "https://github.com/finboxio/require-mjs#readme",
+  "homepage": "https://github.com/finboxio/resolve-mjs#readme",
   "devDependencies": {
     "eslint": "5.16.0",
     "eslint-config-standard": "12.0.0",
