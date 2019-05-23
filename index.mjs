@@ -3,10 +3,11 @@ import Path from 'path'
 
 const BUILTINS = Module.builtinModules
 const EXTENSIONS = {
-  '.js': 'cjs',
-  '.mjs': 'esm',
+  '.js': 'commonjs',
+  '.mjs': 'module',
   '.node': 'addon',
-  '.json': 'json'
+  '.json': 'json',
+  '.wasm': 'wasm'
 }
 
 export async function resolve (specifier, parent, system) {
