@@ -1,9 +1,11 @@
 {
   "name": "resolve-mjs",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Import .mjs modules using legacy `require` resolution algorithm",
   "main": "index.mjs",
-  "engines": { "node" : "12.x" },
+  "engines": {
+    "node": "12.x"
+  },
   "engineStrict": true,
   "scripts": {
     "test": "NODE_PATH=test node --experimental-modules --loader ./index.mjs test/spec.mjs",
