@@ -16,5 +16,6 @@
     "json"
   ],
   "rules": {
+    "camelcase": "off"
   }
 }

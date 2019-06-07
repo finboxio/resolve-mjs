@@ -1,15 +1,15 @@
 {
   "name": "resolve-mjs",
   "version": "2.0.0",
-  "description": "Import .mjs modules using legacy `require` resolution algorithm",
+  "description": "Import ecmascript modules using legacy `require` resolution algorithm",
   "main": "index.mjs",
   "engines": {
     "node": "12.x"
   },
   "engineStrict": true,
   "scripts": {
-    "test": "NODE_PATH=test node --experimental-modules --loader ./index.mjs test/spec.mjs",
-    "lint": "eslint --ext .js,.mjs,.json ."
+    "test": "NODE_PATH=test-module node test-module/spec.mjs && NODE_PATH=test-commonjs node test-commonjs/spec.mjs && NODE_PATH=test-babel node --loader ./babel.mjs test-babel/spec.mjs",
+    "lint": "eslint --ext .js,.mjs,.json,.cjs ."
   },
   "repository": {
     "type": "git",
@@ -21,7 +21,10 @@
     "module",
     "node_path",
     "require",
-    "mjs"
+    "mjs",
+    "commonjs",
+    "babel",
+    "esm"
   ],
   "author": "finboxio",
   "license": "MIT",
@@ -44,5 +47,13 @@
       "pre-commit": "npm run lint",
       "pre-push": "npm run test"
     }
+  },
+  "dependencies": {
+    "@babel/core": "7.4.5",
+    "@babel/register": "7.4.4",
+    "find-package-json": "1.2.0",
+    "lodash.escaperegexp": "4.1.2",
+    "mkfifo": "2.0.0",
+    "source-map-support": "0.5.12"
   }
 }
