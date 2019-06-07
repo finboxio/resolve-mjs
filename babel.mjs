@@ -77,40 +77,41 @@ const transpiler = async (path, opts, format) => {
     return { url: `file://${path}`, format: 'dynamic' }
   }
 
-  const url = await compileESM(path, opts, format)
+  let url = TRANSFORM_MAP[path]
+  if (!url) {
+    url = await compileESM(path, opts)
+  }
 
   return { url, format }
 }
 
-const compileESM = async (path, opts, format) => {
+const compileESM = async (path, opts) => {
   const uid = crypto.createHash('sha256').update(path, 'utf8').digest('hex')
   const fifoname = `/tmp/${uid}`
   const url = `file://${fifoname}`
 
-  if (!TRANSFORM_MAP[path]) {
-    TRANSFORM_MAP[path] = fifoname
-    const transformed = await babel.transformFileAsync(path, {
-      ...opts,
-      caller: { name: 'resolve-mjs', supportsStaticESM: true },
-      filename: path,
-      sourceMaps: true
-    })
+  TRANSFORM_MAP[path] = url
+  const transformed = await babel.transformFileAsync(path, {
+    ...opts,
+    caller: { name: 'resolve-mjs', supportsStaticESM: true },
+    filename: path,
+    sourceMaps: true
+  })
 
-    FILE_MAP[url] = { path, map: transformed.map, format }
+  FILE_MAP[url] = { path, map: transformed.map }
 
-    // Set up a named pipe to serve the transpiled file
-    // without actually writing to the filesystem
+  // Set up a named pipe to serve the transpiled file
+  // without actually writing to the filesystem
+  await fs.promises.unlink(fifoname).catch((e) => {})
+  await mkfifo(fifoname, 0o644)
+  fs.promises.open(fifoname, 'w').then(async (fifo) => {
+    await fs.promises.writeFile(fifo, transformed.code)
+    await fifo.close()
     await fs.promises.unlink(fifoname).catch((e) => {})
-    await mkfifo(fifoname, 0o644)
-    fs.promises.open(fifoname, 'w').then(async (fifo) => {
-      await fs.promises.writeFile(fifo, transformed.code)
-      await fifo.close()
-      await fs.promises.unlink(fifoname).catch((e) => {})
-    }).catch((e) => {
-      console.error(`Failed to send transpiled module ${path} with ${e.name}:`, e)
-      process.exit(1)
-    })
-  }
+  }).catch((e) => {
+    console.error(`Failed to send transpiled module ${path} with ${e.name}:`, e)
+    process.exit(1)
+  })
 
   return url
 }
