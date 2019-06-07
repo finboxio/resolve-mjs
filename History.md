@@ -1,4 +1,9 @@
 
+2.1.2 / 2019-06-07
+==================
+
+  * Fix issue with symlinks and relative imports
+
 2.1.1 / 2019-06-07
 ==================
 
