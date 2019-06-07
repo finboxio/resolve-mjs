@@ -1,5 +1,6 @@
 import Module from 'module'
 import Path from 'path'
+import fs from 'fs'
 import pkg from 'find-package-json'
 
 const EXTENSIONS = {
@@ -15,9 +16,18 @@ const EXTENSIONS = {
 export async function resolve (specifier, parent, system) {
   try {
     // Let the default resolve algorithm try first
-    return system(specifier, parent)
+    let { url, format } = system(specifier, parent)
+
+    // Resolve symlinks
+    if (url.startsWith('file://')) {
+      const realpath = await fs.promises.realpath(url.replace('file://', ''))
+      url = `file://${realpath}`
+    }
+
+    return { url, format }
   } catch (error) {
-    const require = Module.createRequireFromPath(Path.join(process.cwd(), specifier))
+    const base = parent ? Path.dirname(parent.replace('file://', '')) : process.cwd()
+    const require = Module.createRequireFromPath(Path.join(base, specifier))
 
     let path
     try {
@@ -40,6 +50,8 @@ export async function resolve (specifier, parent, system) {
       const type = pkgdef && pkgdef.value && pkgdef.value.type
       format = type === 'module' ? 'module' : 'commonjs'
     }
+
+    path = await fs.promises.realpath(path)
 
     return { url: `file://${path}`, format }
   }

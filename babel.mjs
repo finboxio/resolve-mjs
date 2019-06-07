@@ -129,7 +129,7 @@ const compileCJS = (path, opts) => {
     sourceMaps: true
   })
 
-  FILE_MAP[path] = { path, map: transformed.map }
+  FILE_MAP[path] = { path, map: transformed.map, format: 'commonjs' }
 
   module._compile(transformed.code, path)
   module.loaded = true
@@ -138,11 +138,13 @@ const compileCJS = (path, opts) => {
 }
 
 export async function resolve (specifier, parent, system) {
+  if (FILE_MAP[parent]) parent = `file://${FILE_MAP[parent].path}`
   const { url, format } = await fallback(specifier, parent, system)
 
-  const path = url.replace('file://', '')
+  let path = await url.replace('file://', '')
   const opts = [ 'module', 'commonjs' ].includes(format) && shouldTranspile(path)
   if (opts) {
+    path = await fs.promises.realpath(path)
     return transpiler(path, opts, format)
   }
 
