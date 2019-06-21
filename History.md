@@ -1,4 +1,11 @@
 
+2.2.0 / 2019-06-20
+==================
+
+  * Fix race condition creating fifo streams
+  * Support direct non-default imports from all commonjs files (e.g. `import { x } from 'module'` is allowed where `module.exports.x = y`)
+  * Cleanup & refactor
+
 2.1.3 / 2019-06-07
 ==================
 
