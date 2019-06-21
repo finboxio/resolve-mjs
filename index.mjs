@@ -3,8 +3,10 @@ import Path from 'path'
 import fs from 'fs'
 import pkg from 'find-package-json'
 
+import DynamicExport from './lib/dynamic-export.mjs'
+
 const EXTENSIONS = {
-  '.cjs': 'commonjs',
+  '.cjs': 'dynamic',
   '.mjs': 'module',
   '.es': 'module',
   '.es6': 'module',
@@ -48,11 +50,18 @@ export async function resolve (specifier, parent, system) {
       const dir = Path.dirname(path)
       const pkgdef = pkg(dir).next()
       const type = pkgdef && pkgdef.value && pkgdef.value.type
-      format = type === 'module' ? 'module' : 'commonjs'
+      format = type === 'module' ? 'module' : 'dynamic'
     }
 
     path = await fs.promises.realpath(path)
 
     return { url: `file://${path}`, format }
   }
+}
+
+export async function dynamicInstantiate (url) {
+  const path = url.replace('file://', '')
+  const realpath = await fs.promises.realpath(path)
+  const source = await fs.promises.readFile(realpath)
+  return DynamicExport(realpath, source.toString())
 }

@@ -8,7 +8,10 @@
   },
   "engineStrict": true,
   "scripts": {
-    "test": "NODE_PATH=test-module node test-module/spec.mjs && NODE_PATH=test-commonjs node test-commonjs/spec.mjs && NODE_PATH=test-babel node --loader ./babel.mjs test-babel/spec.mjs",
+    "test:esm": "NODE_PATH=test-module node test-module/spec.mjs",
+    "test:cjs": "NODE_PATH=test-commonjs node test-commonjs/spec.mjs",
+    "test:babel": "NODE_PATH=test-babel node --loader ./babel.mjs test-babel/spec.mjs",
+    "test": "npm run test:esm && npm run test:cjs && npm run test:babel",
     "lint": "eslint --ext .js,.mjs,.json,.cjs ."
   },
   "repository": {
