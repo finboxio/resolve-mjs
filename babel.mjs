@@ -110,6 +110,7 @@ const shouldTranspile = (path) => {
   }
 }
 
+const pending = []
 const compileESM = async (path, opts) => {
   const transpiled = await transpile(path, opts)
 
@@ -122,14 +123,24 @@ const compileESM = async (path, opts) => {
   // without actually writing to the filesystem
   await fs.promises.unlink(fifoname).catch((e) => {})
   await mkfifo(fifoname, 0o644)
-  fs.promises.open(fifoname, 'w').then(async (fifo) => {
-    await fs.promises.writeFile(fifo, transpiled.code)
-    await fifo.close()
-    await fs.promises.unlink(fifoname).catch((e) => {})
-  }).catch((e) => {
-    console.error(`Failed to send transpiled module ${path} with ${e.name}:`, e)
-    process.exit(1)
-  })
+
+  // Node.js seems to hang when more than a few named pipes
+  // are opened concurrently. So before we return the pipe url
+  // we wait for any currently pending imports to be read and
+  // closed.
+  while (pending.length) {
+    await pending.pop()
+  }
+
+  pending.push(fs.promises.open(fifoname, 'w')
+    .then(async (fifo) => {
+      await fs.promises.appendFile(fifo, transpiled.code)
+      await fifo.close()
+      await fs.promises.unlink(fifoname).catch((e) => {})
+    }).catch((e) => {
+      console.error(`Failed to send transpiled module ${path} with ${e.name}:`, e)
+      process.exit(1)
+    }))
 
   return url
 }
