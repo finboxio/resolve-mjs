@@ -1,6 +1,6 @@
 {
   "name": "resolve-mjs",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Import ecmascript modules using legacy `require` resolution algorithm",
   "main": "index.mjs",
   "engines": {
