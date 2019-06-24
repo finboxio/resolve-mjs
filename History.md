@@ -1,4 +1,9 @@
 
+2.2.1 / 2019-06-24
+==================
+
+  * Throttle piped imports to resolve issue with fs hanging
+
 2.2.0 / 2019-06-20
 ==================
 
