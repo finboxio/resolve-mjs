@@ -1,4 +1,9 @@
 
+2.2.2 / 2019-06-26
+==================
+
+  * Fix invariant violation in some ExportProxy cases
+
 2.2.1 / 2019-06-24
 ==================
 
